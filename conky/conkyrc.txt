@@ -1,0 +1,149 @@
+#	.conkyrc configuration
+#	original by Tristam Green, 11-21-2007
+#	Revision 1.123 11-23-2007
+#       MeduZa 05/05/2008
+#	Modified by Fazer 24/05/2008
+#Wklei³em je do katalogu /usr/share/fonts/Conky, a potem wykona³em "sudo fc-cache -f -v" i zrestartowa³em Conky.
+# maintain spacing between certain elements
+use_spacer right
+
+# set to yes if you want tormo to be forked in the background
+background yes
+
+use_xft yes
+
+# Xft font when Xft is enabled
+#xftfont Vera-8
+#xftfont Andale Mono-8
+#xftfont Clean-8
+#xftfont cubicfive10:pixelsize=8
+xftfont Sans-Serif:size=9:pixelsize=11
+#xftfont swf!t_v02:pixelsize=11
+
+# Text alpha when using Xft
+xftalpha 1
+#mail_spool $MAIL
+
+# Update interval in seconds
+update_interval 1.0
+
+# Create own window instead of using desktop (required in nautilus) normal desktop or override
+own_window yes
+own_window_type override
+own_window_transparent yes
+own_window_hints undecorated,below,sticky,skip_taskbar,skip_pager
+
+# Use double buffering (reduces flicker, may not work for everyone)
+double_buffer yes
+
+# Minimum size of text area
+minimum_size 200 5
+maximum_width 250
+
+# Draw shades?
+draw_shades no
+
+# Draw outlines?
+draw_outline no # amplifies text
+
+# Draw borders around text
+draw_borders no
+
+# Stippled borders?
+stippled_borders 3
+
+# border margins
+#border_margin 5
+
+# border widt5
+#border_width 6
+
+# Default colors and also border colors, grey90 == #e5e5e5
+default_color grey90
+#default_shade_color black
+default_outline_color DarkGrey
+
+# Text alignment, other possible values are commented
+#alignment top_left
+#alignment top_right
+#alignment bottom_left
+#alignment bottom_right
+alignment middle_right
+
+# Gap between borders of screen and text
+gap_x 24
+gap_y -20
+
+# Subtract file system buffers from used memory?
+no_buffers yes
+
+# set to yes if you want all text to be in uppercase
+uppercase no
+
+
+TEXT
+${font OpenLogos:regular:size=14}${color #ffa500}u ${font Anklepants:regular:size=11}${color #5da5d3}OS Info
+${voffset -10}${color #ffd700}${hr 1}$font$color
+  ${font Bitstream Charter:bold:size=9}${color #ffd700}${execi 99999 uname -o} ${color #cdc8b1}${execi 99999 lsb_release -d -s -c | tr -s "\n" " "}
+   ${color}$kernel ${color #cdc8b1}$nodename
+   ${color #ffd700}Up Time: ${color}$uptime_short
+
+${font Your Keys:regular:18}${color white}W ${font Anklepants:regular:size=11}${color #5da5d3}CPU
+${voffset -10}${color #ffd700}${hr 1}$font$color
+   ${font Sans:bold:size=7}${color #ffd700}${execi 99999 cat /proc/cpuinfo | grep "model name" -m1 | cut -d":" -f2 | cut -d" " -f2- | sed 's#Processor ##'}$font$color
+
+   ${voffset -8}Core0 ${color #c0ff3e}+${execi 20 perl -e '$a=`sensors | grep "Core0"`;$a=~/(\d*)\./;print "$1\n"'}°C $font$color${alignc -40} Core1 ${color #c0ff3e}$alignr +${execi 20 perl -e '$a=`sensors |grep "Core1"`;$a=~/(\d*)\./;print "$1\n"'}°C $color
+   ${voffset -6}${cpugraph cpu1 25,115 000000 ff4500 }  ${cpugraph cpu2 25,115 000000 436eee}
+   ${color #ffffff}${voffset -25}            ${cpu cpu1}%$alignr${cpu cpu2}%         ${color #ff4500}
+   ${voffset 3}$alignr${cpubar cpu1 3,115}  ${color #436eee}${cpubar cpu2 3,115}$color
+
+   ${voffset -5}${color #c0ff3e}Frequency: ${color #f0e68c}${freq} MHz / ${freq 2} MHz
+
+   ${color #ff6a6a}${top name 1}$alignr${top cpu 1}$color
+   ${top name 2}${color #ffc125}$alignr${top cpu 2}$color
+
+${font Your Keys:regular:18}${color #f5f5dc}U ${voffset -4}${font Anklepants:regular:size=11}${color #5da5d3}RAM
+${voffset -10}${color #ffd700}${hr 1}$font$color
+   ${voffset 7}${font :size=9}${color #ffe7ba}RAM:${color #ffc125}$alignc    $mem / $memmax
+   $font${voffset 7}${color #828282}${membar 11}
+${color #ffff00}${voffset -14}${alignc -10}$memperc%
+
+   ${font :size=9}${color #ffe7ba}SWAP:$color$alignc   $swap / $swapmax
+   $font${voffset 7}${color #636363}${swapbar 11}
+${color #ffff00}${voffset -14}${alignc -10}$swapperc%
+
+   ${color #ff6a6a}${top_mem name 1}$alignr${top_mem mem 1}$color
+   ${top_mem name 2}${color #ffc125}$alignr${top_mem mem 2}$color
+   ${top_mem name 3}${color #eeee00}$alignr${top_mem mem 3}$color
+   ${top_mem name 4}${color #c0ff3e}$alignr${top_mem mem 4}$color
+
+${voffset 4}${font Mac Dingbats:regular:size=12}${color white}V ${font Anklepants:regular:size=11}${color #5da5d3}Disc
+${voffset -10}${color #ffd700}${hr 1}$font$color
+   ${voffset 7}${color #c0ff3e}HD 1: ${color #f0e68c}${hddtemp /dev/sda} ${alignc -40}${color #c0ff3e} HD 2: ${color #f0e68c}${hddtemp /dev/sdb}
+   $color${diskiograph 10 00ff00 2f4f4f}
+   ${voffset -25}${color #ffd700}  Reading: $color$diskio_read$alignr${color #ffd700}Writing: $color$diskio_write  ${voffset 15}
+   ${color #ffe7ba}Hardy: $color${fs_used /}/ ${fs_size /}$alignr${color #ffd700}${fs_type /} $color${fs_used_perc /}%
+   ${voffset -5}${color #ffff00}${fs_bar 3 /}
+${if_mounted /media/KARTA}   ${color #ffe7ba}KARTA:$color$alignc ${fs_used /media/KARTA}/ ${fs_size /media/KARTA}$alignr${color #ffd700}${fs_type /media/KARTA} $color${fs_used_perc /media/KARTA}%
+   ${voffset -5}${color #9f79ee}${fs_bar 3 /media/KARTA}
+$endif${if_mounted /media/System}   ${color #ffe7ba}WinXP:$color$alignc ${fs_used /media/System}/ ${fs_size /media/System}$alignr${color #ffd700}${fs_type /media/System} $color${fs_used_perc /media/System}%
+   ${voffset -5}${color #7fff00}${fs_bar 3 /media/System}
+$endif${if_mounted /media/PATYK}   ${color #ffe7ba}Pendrive:$color$alignc ${fs_used /media/PATYK}/ ${fs_size /media/PATYK}$alignr${color #ffd700}${fs_type /media/PATYK} $color${fs_used_perc /media/PATYK}%
+   ${voffset -5}${color #7fff00}${fs_bar 3 /media/PATYK}
+$endif
+
+${voffset -20}${font Wingdings 3:regular:size=18}${color #bcee68}F${voffset -3}${font Anklepants:regular:size=11}${color #5da5d3} Network
+${voffset -10}${color #ffd700}${hr 1}$font$color
+   ${color #ffe7ba}WAN: $color${execi 240 host tuhost.myvnc.com | cut -d" " -f4}
+   ${color #ffe7ba}${if_existing /proc/net/route eth0}
+LAN: $alignr${addr eth0}
+   ${downspeedgraph eth0 25,115 b0e2ff 556b2f} ${alignr}${upspeedgraph eth0 25,115 b0e2ff ff4040}
+   ${voffset -25}${color #ffd700} Download: ${color white}${downspeed eth0}k/s ${alignr}${color #ffd700}Upload: ${color white}${upspeed eth0}k/s ${voffset 15}
+   ${color #ffe7ba}Total: ${color white}${totaldown eth0} ${alignr}${color #ffe7ba}Total:  ${color white}${totalup eth0}
+$endif
+${if_existing /proc/net/route wlan0}
+   LAN: $alignr${addr wlan0}
+   ${downspeedgraph wlan0 25,115 b0e2ff 556b2f} ${alignr}${upspeedgraph wlan0 25,115 b0e2ff ff4040}
+   ${voffset -25}${color #ffd700} Download: ${color white}${downspeed wlan0}k/s ${alignr}${color #ffd700}Upload: ${color white}${upspeed wlan0}k/s ${voffset 15}
+   ${color #ffe7ba}Total: ${color white}${totaldown wlan0} ${alignr}${color #ffe7ba}Total:  ${color white}${totalup wlan0}
+$endif

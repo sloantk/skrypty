@@ -1,0 +1,12 @@
+rm -f /tmp/testfile
+echo "starting the watcher, with program-'yes' and size=10,000,000"
+watcher /tmp/testfile yes 10000000 $$ & 
+echo "sleep 5 seconds, to demonstrate 'waiting' window"
+sleep 5
+echo "starting the file-writing process, 1 meg every 1/2 second"
+for loop in 1 2 3 4 5 6 7 8 9 10
+do
+	yes | dd bs=1k count=1000 >> /tmp/testfile 2>/dev/null
+	echo "$loop megs"
+	sleep .5
+done

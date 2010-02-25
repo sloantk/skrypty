@@ -1,0 +1,18 @@
+#!/bin/bash
+cd ~/skrypty/tv
+
+## Mini
+#wget -N http://download.ubuntu.pl/tv-guide/xmltv_mini-utf.tar.bz2
+#tar -xjf xmltv_mini-utf.tar.bz2
+
+## Standard
+#wget -N http://download.ubuntu.pl/tv-guide/xmltv-utf.tar.bz2
+#tar -xjf xmltv-utf.tar.bz2
+
+## Full
+wget -N http://download.ubuntu.pl/tv-guide/xmltv_full-utf.tar.bz2
+tar -xjf xmltv_full-utf.tar.bz2
+
+## UPC
+#wget -N http://download.ubuntu.pl/tv-guide/xmltv_upc-utf.tar.bz2
+#tar -xjf xmltv_upc-utf.tar.bz2

@@ -1,0 +1,23 @@
+NAME+=("Fanaa")
+ADRESS+=("/mnt/windows/Filmy/Fanaa.iso")
+
+NAME+=("Miłość żyje wiecznie")
+ADRESS+=("/mnt/windows/Filmy/MILOSC_ZYJE_WIECZNIE.iso")
+
+NAME+=("Miłość nie przeszkadzać")
+ADRESS+=("/mnt/windows/Filmy/Milosc_nie_przeszkadzac.iso")
+
+NAME+=("Niania w Nowym Yorku")
+ADRESS+=("/mnt/windows/Filmy/NIANIA_W_NOWYM_JORKU.iso")
+
+NAME+=("Serce jest szalone")
+ADRESS+=("/mnt/windows/Filmy/SERCE_JEST_SZALONE.iso")
+
+NAME+=("To właśnie miłość")
+ADRESS+=("/mnt/windows/Filmy/To_wlasnie_milosc.iso")
+
+NAME+=("Trudna droga do miłości")
+ADRESS+=("/mnt/windows/Filmy/Trudna_droga_do_milosci.iso")
+
+NAME+=("Żona dla zuchwałych")
+ADRESS+=("/mnt/windows/Filmy/Zona_dla_zuchwalych.iso")

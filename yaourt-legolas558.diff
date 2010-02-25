@@ -1,0 +1,12 @@
+--- /usr/bin/yaourt	2009-10-20 10:59:54.000000000 +0200
++++ /usr/bin/yaourt	2009-10-20 11:00:28.000000000 +0200
+@@ -32,7 +32,8 @@
+ AUR_URL="http://aur.archlinux.org/packages.php?setlang=en&do_Search=SeB=nd&L=2&C=0&PP=100&K="
+ AUR_URL3="http://aur.archlinux.org/packages.php?setlang=en&ID="
+ ABS_URL="http://archlinux.org/packages/search/?category=all&limit=99000"
+-ABS_REPOS_URL="http://repos.archlinux.org/viewvc.cgi"
++#ABS_REPOS_URL="http://repos.archlinux.org/viewvc.cgi"
++ABS_REPOS_URL="http://repos.archlinux.org/wsvn/packages"
+ [ -z "$LC_ALL" ] && export LC_ALL=$LANG
+ 
+ ###################################

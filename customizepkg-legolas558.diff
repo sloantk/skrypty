@@ -1,0 +1,60 @@
+--- /usr/bin/customizepkg	2009-10-20 03:32:52.000000000 +0200
++++ /usr/bin/customizepkg	2009-10-20 16:40:54.000000000 +0200
+@@ -50,21 +50,23 @@
+ 	grep --invert-match "\(^#\|^$\)" $configfile |
+ 	while read line; do
+ 		unset action context pattern value
+-		action=`echo $line | awk -F "#" '{print $1}'`
+-		context=`echo $line | awk -F "#" '{print $2}'`
+-		pattern=`echo $line | awk -F "#" '{print $3}'`
+-		#echo "action=$action , context=$context  , pattern=$pattern"
++		## get all 3 fields
++		action=$(echo $line | awk -F# '{ print $1 }')
++		context=$(echo $line | awk -F# '{ print $2 }')
++		pattern="$(echo $line | awk -F# '{ print $3 }')"
++		echo "action=$action , context=$context  , pattern=$pattern"
+ 		case $action in
+ 			remove|replace)
+ 				value=`echo $line | awk -F [^#]# '{print $4}'`
+ 				echo "=> removes/replaces '$pattern' by '$value' in $context"
+ 				if [ "$action" = "replace" -a "$context" != "global" ]; then
+-					value=" '$(echo $value | tr -d "\'")'"
++					value="$(echo $value | tr -d "\'")"
+ 				fi
+ 				if [ "$context" != "global" ]; then
+ 					pattern="$pattern[<>=]*[a-z0-9.]*"
+ 				fi
+ 				if [ "$context" = "global" ]; then
++					echo "sed -i \"s/$pattern/$value/g\" \"$scriptfile\""
+ 					sed -i "s/$pattern/$value/g" "$scriptfile"
+ 				else
+ 					sed -i "/^$context=/,/)$/ s/[[:space:]]*[']*$pattern[']*/$value/g" "$scriptfile"
+@@ -115,7 +117,8 @@
+ 	echo "PKGBUILD not found"
+ 	exit 1
+ fi
+-source ./PKGBUILD || exit 1
++## legolas558: do not source the PKBUILD because it could contain errors
++#source ./PKGBUILD
+ 
+ if [ ! -r "$CONFIGDIR/$pkgname" ]; then
+ 	echo "no configuration found for $pkgname in $CONFIGDIR/"
+@@ -123,11 +126,17 @@
+ fi
+ #TODO: PKGBUILD + file.install
+ cp ./PKGBUILD ./PKGBUILD.custom
++echo "Now modifying PKGBUILD"
+ modify_file "$CONFIGDIR/$pkgname" "./PKGBUILD" "./PKGBUILD.custom" || exit 1
++## modified by legolas558
++CPKGTMP=$(mktemp customizepkg-$USER-diff.XXXXXXXX)
++echo -e "The following customizepkg rules were applied:\n----\n$(<$CONFIGDIR/$pkgname)\n----\nChanges:" > $CPKGTMP
++diff -u ./PKGBUILD ./PKGBUILD.custom >> $CPKGTMP
++less $CPKGTMP
++rm -f $CPKGTMP
+ if [ $MODIFY -eq 1 ]; then
+ 	cp ./PKGBUILD ./PKGBUILD.original
+ 	cp ./PKGBUILD.custom ./PKGBUILD
+ fi
+ 
+-
+ exit 0

@@ -1,0 +1,18 @@
+${voffset 5}${goto 10}${font ConkyWeather:style=Bold:size=40}[--datatype=WF]${font}
+${voffset 5}${goto 20}[--datatype=HT --hideunits --centeredwidth=3]/[--datatype=LT --hideunits --centeredwidth=3]
+${voffset 10}${goto 10}${font ConkyWindNESW:size=40}[--datatype=BS]${font}
+${voffset 5}${goto 10}[--datatype=WS] - [--datatype=WD]
+${voffset -145}${goto 100}${color1}${font Bitstream Vera Sans Mono:style=Bold:size=10}[--datatype=CT]${font}
+${voffset 10}${goto 100}${color3}Station: ${color1}[--datatype=OB]
+${goto 100}${color3}City: ${color1}[--datatype=CN]
+${goto 100}${color3}Rain: ${color1}[--datatype=PC]
+${goto 100}${color3}UV: ${color1}[--datatype=UI] - [--datatype=UT]
+${goto 100}${color3}Humidity: ${color1}[--datatype=HM]
+${goto 100}${color3}Dew Point: ${color1}[--datatype=DP]
+${goto 100}${color3}Sunrise/Set: ${color1}[--datatype=SR] / [--datatype=SS]
+${goto 100}${color3}Bar: ${color1}[--datatype=BR] - [--datatype=BD]
+${goto 100}${color3}Moon: ${color1}[--datatype=MP]
+${voffset 25}${goto 25}[--datatype=DW --startday=1 --shortweekday]${goto 100}[--datatype=DW --startday=2 --shortweekday]${goto 175}[--datatype=DW --startday=3 --shortweekday]${goto 250}[--datatype=DW --startday=4 --shortweekday]
+${voffset 10}${goto 10}${font ConkyWeather:size=32}[--datatype=WF --startday=1 --endday=4 --spaces=3]${font}
+${voffset 15}${goto 15}[--datatype=HT --startday=1 --hideunits --centeredwidth=3]/[--datatype=LT --startday=1 --hideunits --centeredwidth=3]${goto 90}[--datatype=HT --startday=2 --hideunits --centeredwidth=3]/[--datatype=LT --startday=2 --hideunits --centeredwidth=3]${goto 170}[--datatype=HT --startday=3 --hideunits --centeredwidth=3]/[--datatype=LT --startday=3 --hideunits --centeredwidth=3]${goto 245}[--datatype=HT --startday=4 --hideunits --centeredwidth=3]/[--datatype=LT --startday=4 --hideunits --centeredwidth=3]
+${color3}${font Bitstream Vera Sans Mono:size=7}${alignr 20}Last Update: [--datatype=LU]${font}

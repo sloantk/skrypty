@@ -1,0 +1,95 @@
+# /usr/share/dradio/dradio.lista
+#  Konfiguracja radiowej listy
+
+NAME+=("Radio Zet")
+ADRESS+=("http://www.radiozet.pl/content/stream/radiozet.pls")
+
+NAME+=("RMF FM")
+ADRESS+=("http://213.251.141.62:8000/")
+
+NAME+=("POLSKASTACJA Best of 80 90")
+ADRESS+=("http://polskastacja.pl/play/aac_np.pls")
+
+NAME+=("Radio Z³ote Przeboje")
+ADRESS+=("http://lodz.radio.pionier.net.pl:8000/pl/zloteprzeboje.ogg")
+
+NAME+=("Polskastacja Muzyka na Topie")
+ADRESS+=("http://polskastacja.pl/play/aac_mnt.pls")
+
+NAME+=("Planeta fm")
+ADRESS+=("http://213.251.141.82:8150")
+
+NAME+=("Radiostacja")
+ADRESS+=("http://213.251.141.82:8150")
+
+NAME+=("Radio Eska")
+ADRESS+=("http://warszawa1-1.radio.pionier.net.pl:8000/eska-warszawa.ogg")
+
+NAME+=("Antyradio")
+ADRESS+=("http://213.251.138.121:7000")
+
+NAME+=("Tylko Polskie Przeboje")
+ADRESS+=("http://polskastacja.pl/play/aac_tpp.pls")
+
+NAME+=("Best stacja")
+ADRESS+=("http://www.beststacja.net.pl/48.m3u")
+
+NAME+=("TOK FM")
+ADRESS+=("http://sask1-3.radio.pionier.net.pl:8000/pl/radiotok.ogg")
+
+NAME+=("Jungletrain")
+ADRESS+=("http://stream1.jungletrain.net:8000")
+
+NAME+=("Bassdrive")
+ADRESS+=("http://uk.streams.bassdrive.com:8000")
+
+NAME+=("Radio Team")
+ADRESS+=("http://www.emiter.teamradio.pl:8095")
+
+NAME+=("Art Radio")
+ADRESS+=("http://www.radioart.pl/radioART_jedynka.m3u")
+
+NAME+=("Radio Luz")
+ADRESS+=("http://radioluz.pwr.wroc.pl/listen.pls")
+
+NAME+=("Radio Afera")
+ADRESS+=("http://lodz.radio.pionier.net.pl:8000/pl/afera.ogg")
+
+NAME+=("Radio Akadera")
+ADRESS+=("http://lodz.radio.pionier.net.pl:8000/pl/akadera.ogg")
+
+NAME+=("Radio Centrum")
+ADRESS+=("http://www.centrum.fm/ogg96.m3u")
+
+NAME+=("Roxyfm")
+ADRESS+=("http://lodz.radio.pionier.net.pl:8000/pl/roxyfm.ogg")
+
+NAME+=("Radio horyzont")
+ADRESS+=("http://radiohoryzont.net:9050")
+
+NAME+=("Radio merkury")
+ADRESS+=("http://lodz.radio.pionier.net.pl:8000/pl/merkury.ogg")
+
+NAME+=("Radio kolor")
+ADRESS+=("http://radiokolor.streamhost.pl:8074")
+
+NAME+=("Idobi Radio")
+ADRESS+=("http://72.13.82.202:80")
+
+NAME+=("Radio Zak")
+ADRESS+=("http://lodz.radio.pionier.net.pl:8000/radiozak.ogg")
+
+NAME+=("Radio dla Ciebie")
+ADRESS+=("http://sc9232.xpx.pl:9232")
+
+NAME+=("Nectarine")
+ADRESS+=("http://nectarine.sik.fi:8002/live.mp3")
+
+NAME+=("Radio Wa Ma")
+ADRESS+=("http://213.251.139.121:9500")
+
+NAME+=("Radio £aweczka")
+ADRESS+=("http://www.laweczka.net/laweczka.m3u")
+
+NAME+=("Radio Maryja")
+ADRESS+=("mms://195.94.205.211/rm")

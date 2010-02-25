@@ -1,0 +1,260 @@
+#!/bin/bash
+#
+# by borzole.one.pl
+# VERSION = 2009.12.19 01:33
+# ------------------------------------------------------------------------------
+# zwikirepo - pobiera paczki RPM prosto z http://wiki.fedora.pl/wiki/repo
+# wersja GUI (zenity)
+# 
+# Zmiany GUI:
+# 2009.12.19
+#	- zmiana, pasek postępu w funkcji main używa osobnego deskryptora pliku
+#	dzięki temu jest przejrzyściej i izolowany jest pasek, a nie kod.
+#	- zmiana, powiadomienia o aktualizacji ma teraz ikonkę
+# 2009.12.16
+#	- zmiana paska startowego na pulsujący
+# 2009.12.14
+#	- mniej nachalne potwierdzenie aktualizacji
+#	- dodałem "zenity --progress" na stacie skryptu
+#	- autoupdate w tle
+#	- zmiany w nazewnictwie kilku funkcji
+#	- inne drobne korekty
+# 2009.12.06
+#	- usunąłem $TERM na rzecz xterm (parametr jest ustawiony tylko jeśli program startuje z konsoli)
+# ------------------------------------------------------------------------------
+# Zmiany SILNIK:
+# 2009.12.16
+#	- poprawka, skrypt nie usuwał śmieci w tmp po sprawdzaniu aktualizacji
+# 2009.12.14
+#	- przebudowa skryptów pod moje "bside", z tego powodu pewne parametry mogą być zbędne
+#	- dodane sprawdzenie aktualizacji
+# 2009.12.13
+#	- poprawka, niedostateczne filtrowanie linków, dodałem grep 'http'
+# 2009.12.02
+#	- poprawka, źle grep filtrował linki
+#	- dodanie funkcji "wymaga" do sprawdzenia wymaganych zależności
+# 2009.11.27
+#	- poprawka wyboru katalogu
+# 	- ładowanie listy w locie do tablicy zamiast plików
+# 	- jeden silnik, dwa interfejs: CLI i ZENITY
+# 	- porzucenie instalacji paczek z poziomu skryptu (nie działało :( )
+# 2009.11.24
+# 	- poprawka sortowania listy paczek
+# ------------------------------------------------------------------------------
+export DISPLAY=:0.0
+export LANG=pl_PL.UTF-8
+export PATH=$PATH:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+# ------------------------------------------------------------------------------
+BASE="$0"
+BASENAME="${0##*/}"
+# na potrzeby wewnętrznych funkcji
+ARGS="${@}"
+VERBOSE=TRUE
+DEBUG=FALSE
+VERSION_LOCAL=$(grep -E '^#\ *VERSION\ *='  ${0} | cut -d\= -f2)
+PS3=':: ctrl+d :: wybierz nr:: '
+# ------------------------------------------------------------------------------
+# czcionka: (N)ORMAL, (X)BOLD, (R)ED, (G)REEN, (B)LUE
+N="\e[0m" 
+X="\e[1;38m" 
+r="\e[0;31m"
+R="\e[1;31m"
+g="\e[0;32m"
+G="\e[1;32m"
+b="\e[0;34m"
+B="\e[1;34m"
+# ------------------------------------------------------------------------------
+# domyślny folder pobierania
+DIR=$HOME
+# ------------------------------------------------------------------------------
+get_links(){
+	# zwraca listę linków do paczek rpm oddzielona znakiem nowego wiersza
+	# informacja jest wyłuskiwana z tej strony
+	URL="http://wiki.fedora.pl/index.php?title=repo&action=raw&ctype=text/css"	
+	# metoda: 
+	#		- sed: każdą spację zamienić na znak nowej linii ( składnia linków na wiki wymusza tę spację)
+	#		- grep: wylapać tylko linie kończące się na ".rpm"
+	#		- awk: wyłuskać linie zawierające linki i wyłuskać link http
+	#		- sort: posortowanie i usunięcie pustych linii
+	
+	# http://
+	curl -s ${URL}  \
+		| sed -e 's/\ \ */\n/g' \
+		| grep 'http' \
+		| grep '\.rpm$' \
+		| awk -F "http://" '{ print "http://" $2 }' \
+		| sort -u 
+	# https://
+	# ftp://
+}
+# ------------------------------------------------------------------------------
+set_rpmlist(){
+	# załaduj listę linków do jednej tabeli
+	unset RPMLIST
+	RPMLIST=( $(get_links))
+}
+# ------------------------------------------------------------------------------
+wymaga(){
+	# sprawdza zależności skryptu 
+	# np.
+	# 		wymaga wget zenity notify-send
+	for apps in "$@" ; do
+		which ${apps} >/dev/null 2>&1
+		if [ $? != 0 ] ; then
+			echo -e "${R}[ ERROR ] Nie znaleziono programu \"$apps\""
+			echo -e "${G}Spróbuj zainstalować:"
+			echo -e "\tsu -c'yum install $apps'"
+			echo -e "a jeśli zawiedzie, to spróbuj odnaleźć paczkę dostarczającą wymaganą zależność:"
+			echo -e "\tsu -c'yum provides \\*bin/$apps'"
+			exit 1;
+		fi
+	done
+}
+# ------------------------------------------------------------------------------
+UPDATE_URL="http://dl.dropbox.com/u/409786/pub/bin/zwikirepo"
+# ------------------------------------------------------------------------------
+main(){
+	wymaga wget curl xterm zenity
+	
+	# deskryptor pliku 4 = wejście informacyjne dla paska postępu
+	exec 4> >(zenity --progress --pulsate --width=300 --auto-close --auto-kill  --title="$BASENAME ver.$VERSION_LOCAL" )
+	echo "# Pobieram listę paczek ..." >&4
+	set_rpmlist 
+	# wysłanie setki wywoła "--auto-close" i pasek zniknie
+	echo "100" >&4
+	# zamknięcie deskryptora 4
+	exec 4>&-
+	check_script_update &	
+	ui 
+}
+# ------------------------------------------------------------------------------
+ui(){
+	show_menu_rpmlist
+}
+# ------------------------------------------------------------------------------
+check_script_update(){
+	UPDATE_FILE=$(mktemp)
+	trap "rm -f $UPDATE_FILE 2>/dev/null" EXIT
+	curl -s "$UPDATE_URL"  > $UPDATE_FILE
+	# jeśli coś przerwie skrypt to usuń ten plik
+	
+	VERSION_LAST=$(grep -E '^#\ *VERSION\ *='  $UPDATE_FILE | cut -d\= -f2)
+	
+	[ "$VERSION_LOCAL" != "$VERSION_LAST" ] && show_script_update
+	exit 0 
+}
+# ------------------------------------------------------------------------------
+save_update_file(){
+	SAVE_UPDATE_FILE=$(zenity --file-selection --title="Zapisz aktualną wersję jako ...")
+	if [ $? != 0 ] ; then
+		# w razie nie wybrania niczego
+		zenity --question --title="$BASENAME ver.$VERSION_LOCAL" \
+				--text "Nie wybrano gdzie zapisać aktualną wersję !\n Chcesz spróbować zapisać jeszcze raz?"
+		[ $? == 0 ] && save_update_file
+	fi
+}
+# ------------------------------------------------------------------------------
+show_script_update(){
+	
+	# dymek
+	echo "message:<i>Dostępna jest aktualizacja skryptu:</i> \\n<span color='red'>zwikirepo</span>!" | zenity --notification --listen
+	# ikona
+	zenity --notification --text "Dostępna jest aktualizacja skryptu !"
+	# kliknięcie na ikonę
+	if [ $? == 0 ] ; then
+		zenity --question --title="$BASENAME ver.$VERSION_LOCAL" \
+				--text "Dostępna jest aktualizacja skryptu !\n
+$VERSION_LOCAL - lokalna wersja
+<b>$VERSION_LAST</b> - ostatnia wersja
+		
+...możesz ją od razu zapisać"
+		[ $? == 0 ] && save_update_file
+		[ $? == 0 ] && mv $UPDATE_FILE "$SAVE_UPDATE_FILE"
+		
+	fi
+}
+# ------------------------------------------------------------------------------
+set_dir(){
+	TMP="$DIR"
+	DIR=$(zenity --file-selection --directory --title="Wybierz katalog")
+	if [ $? != 0 ] ; then
+		# w razie nie wybrania niczego
+		DIR="$TMP"
+	fi
+	show_menu_function
+}
+# ------------------------------------------------------------------------------
+download(){			
+		mkdir -p "$DIR" 2>/dev/null
+		for RPMNR in ${LISTA} ; do
+			xterm -e wget -P "$DIR" "$1" "${RPMLIST[${RPMNR}]}"
+		done		
+}
+# ------------------------------------------------------------------------------
+show_menu_function(){
+	# Menu główne poleceń
+	menu_function(){
+		zenity --title="$BASENAME ver.$VERSION_LOCAL"  --text "::TODO::" \
+				--list  --radiolist --width=400 --height=200 \
+				--column="radiolist" --column "wybierz" --column "polecenie do wykonania" \
+					TRUE		"Pobierz pakiet(y)"								"download"\
+					FALSE		"Pobierz pakiet(y) w drzewo :)" 			"download -x"\
+					FALSE		"Zmień folder pobierania: $DIR"			"set_dir"\
+				--print-column=3 --hide-column=3
+		}
+	# wykonanie poleceń
+	$(menu_function)
+	# powrót do głównego menu
+	show_menu_rpmlist
+}
+# ------------------------------------------------------------------------------
+menu_rpmlist_format(){
+		for ((i = 0; i < ${#RPMLIST[@]} ; i++)); do
+			RPMNR=i
+			echo -e " FALSE ${RPMLIST[$i]##*/} $i ${RPMLIST[$i]}"
+		done
+}
+# ------------------------------------------------------------------------------
+show_menu_rpmlist(){
+	menu_rpmlist() {
+		RPMCOUNT=${#RPMLIST[@]}
+		let "$RPMCOUNT++"
+		zenity --title="$BASENAME ver.$VERSION_LOCAL" \
+			--text "Paczki pochodzą wprost ze strony:\t<b>http://wiki.fedora.pl/wiki/repo</b> \nZnaeziono <b>$RPMCOUNT</b> pakiety. Wybierz pakiety do pobrania:" \
+			--width=1024 --height=800 \
+			--list  --checklist \
+			--column="zaznacz" --column "paczka" --column "nr" --column "url" \
+			$(menu_rpmlist_format|sort) \
+			--separator " "  --multiple \
+			--print-column=3 --hide-column=3
+	}	
+	LISTA=$(menu_rpmlist)
+	if [ $? != 0 ] ; then
+		exit 0
+	elif [ ${#LISTA} == 0 ] ; then
+			# ------------------------------------------------------------------------------
+			zenity --question --title="$BASENAME ver.$VERSION_LOCAL" \
+					--text "Nic nie zaznaczono !?" \
+					--ok-label="OK : już coś wybieram " \
+					--cancel-label="Quit : bye bye :)" \
+			# ------------------------------------------------------------------------------
+			if [ $? != 0 ] ; then
+				exit 0;
+			else
+				# powrót do głównego menu
+				show_menu_rpmlist
+			fi
+	else
+		show_menu_function
+	fi
+}
+# ------------------------------------------------------------------------------
+# uruchomienie funkcji głównej lub z parametru
+if [ -n "$1" ] ; then 
+	"${ARGS}"
+else 
+	main
+fi
+# wyjście z przekazaniem kodu wyjścia ostatniego polecenia
+exit $?
+# ------------------------------------------------------------------------------
